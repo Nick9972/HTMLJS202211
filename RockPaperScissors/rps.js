@@ -1,90 +1,162 @@
-//Array of words
-var rps = [];
-rps[0] = `Rock` 
-rps[1] = `Paper`
-rps[2] = `Scissors`
+//canvas drawing stuff
+var canvas = document.getElementById("c");
+var ctx = canvas.getContext("2d");
 
-//Array of Buttons
-var btn = document.querySelectorAll(`a`)
-//Changes the words in the buttons
-btn[0].innerHTML = rps[0]
-btn[1].innerHTML = rps[1]
-btn[2].innerHTML = rps[2]
+var rock = new Image();
+var paper = new Image();
+var scissors = new Image();
+var hrock = new Image();
+var hpaper = new Image();
+var hscissors = new Image();
 
-//Makes the buttons clickable.
-//Once clicked they call the play function
-btn[0].addEventListener(`click`, function(e){
-    play(0)
-})
-btn[1].addEventListener(`click`, function(e){
-    play(1)
-})
-btn[2].addEventListener(`click`, function(e){
-    play(2)
-})
+rock.src = "images/rock.jpg";
+paper.src = "images/paper.jpg";
+scissors.src = "images/scissors.jpg";
 
-//Play function accepts an integer
-//generates an integer 0-2
-//Displays the player's choice and computer's choice
-function play(pChoice)
-{
-    var cChoice = Math.floor(Math.random()*2.999999)
-    
-    alert(rps[pChoice] + " " + rps[cChoice]) 
+hrock.src = "images/rock2.jpg";
+hpaper.src = "images/paper2.jpg";
+hscissors.src = "images/scissors2.jpg";
 
-    switch(pChoice){
-        case 0:
-            if(cChoice === 0)
-            {
-                //display a tie
-                alert(`You Tied`)
-            }
-            else if(cChoice === 1)
-            {
-                //display a loss
-                alert(`You Lost`)
-            }
-            else
-            {
-                //display a win
-                alert(`You Won`)
-            }
-            break;
+hscissors.onload = function () {
+    draw(rock, paper, scissors, rock, paper, scissors);
+}
 
-            case 1:
-                if(cChoice === 0)
-                {
-                    //display a tie
-                    alert(`You Win`)
-                }
-                else if(cChoice === 1)
-                {
-                    //display a loss
-                    alert(`Tie`)
-                }
-                else
-                {
-                    //display a win
-                    alert(`You Lost`)
-                } 
-            break;
+document.addEventListener("keydown", onKeyDown);
+document.addEventListener("keyup", onKeyUp);
 
-            case 2:
-                if(cChoice === 0)
-                {
-                    //display a tie
-                    alert(`You Lost`)
-                }
-                else if(cChoice === 1)
-                {
-                    //display a loss
-                    alert(`You Win`)
-                }
-                else
-                {
-                    //display a win
-                    alert(`You Tie`)
-                }
-             break;
+var gameOver = true;
+var results = "Select Rock, Paper, or Scissors";
+
+function onKeyDown(e) {
+    console.log(e.keyCode);
+
+}
+
+function onKeyUp(e) {
+    if (e.keyCode == 32) {
+        console.log("You pressed the spacebar");
+        gameOver = false;
+        draw(rock, paper, scissors, rock, paper, scissors);
     }
+}
+
+
+function draw(rock, paper, scissors, crock, cpaper, cscissors) {
+    if (gameOver == true) {
+        //drawing the fonts
+        ctx.font = "50px Impact";
+        ctx.fillStyle = "purple";
+        ctx.strokeStyle = "red";
+        ctx.textAlign = "center";
+        ctx.fillText("Welcome to Rock Paper Scissors!", canvas.width / 2, 280);
+        ctx.fillText("Press Space to Start", canvas.width / 2, 330);
+        ctx.strokeText("Welcome to Rock Paper Scissors!", canvas.width / 2, 280);
+    }
+    else {
+
+        ctx.save();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "50px Comic Sans MS"
+        ctx.textAlign = "center"
+        ctx.fillStyle = "pink";
+        ctx.fillText("Player Choice", canvas.width / 2, 100);
+        ctx.drawImage(rock, canvas.width / 2 - rock.width / 2 - 100, 150);
+        ctx.drawImage(paper, canvas.width / 2 - paper.width / 2, 150);
+        ctx.drawImage(scissors, canvas.width / 2 - scissors.width / 2 + 100, 150);
+        //computer choices
+        ctx.fillText("Computer Choice", canvas.width / 2, 325);
+        ctx.drawImage(crock, canvas.width / 2 - crock.width / 2 - 100, 375);
+        ctx.drawImage(cpaper, canvas.width / 2 - cpaper.width / 2, 375);
+        ctx.drawImage(cscissors, canvas.width / 2 - cscissors.width / 2 + 100, 375);
+
+        ctx.fillText(results, canvas.width / 2, 525);
+        ctx.restore();
+    }
+
+}
+
+
+//alert("Select rock, paper, or scissors!");
+var rps = ["rock", "paper", "scissors"];
+//console.log(rps[2]);
+
+document.getElementById("rock").addEventListener('click', function (e) {
+    //alert("You picked " + rps[0]);
+    playGame(rps[0]);
+});
+document.getElementById("paper").addEventListener('click', function (e) {
+    //alert("You picked " + rps[1]);
+    playGame(rps[1]);
+});
+document.getElementById("scissors").addEventListener('click', function (e) {
+    //alert("You picked " + rps[2]);
+    playGame(rps[2]);
+});
+
+function playGame(playerChoice) {
+    if (gameOver == true) {
+        return;
+    } else {
+        var cpuChoice = Math.floor(Math.random() * 2.99);
+        console.log(cpuChoice, playerChoice);
+
+        switch (playerChoice) {
+            case "rock":
+                if (cpuChoice == 0) {
+                    //rock
+                    results = "Computer chose Rock. It's a tie!";
+                    draw(hrock, paper, scissors, hrock, paper, scissors);
+                }
+                else if (cpuChoice == 1) {
+                    //paper
+                    results = "Computer chose Paper. You lose!";
+                    draw(hrock, paper, scissors, rock, hpaper, scissors);
+                }
+                else {
+                    //scissors
+                    results = "Computer chose Scissors. You win!";
+                    draw(hrock, paper, scissors, rock, paper, hscissors);
+                }
+
+                break;
+
+            case "paper":
+                if (cpuChoice == 0) {
+                    //rock
+                    results = "Computer chose Rock. You win!";
+                    draw(rock, hpaper, scissors, hrock, paper, scissors);
+                }
+                else if (cpuChoice == 1) {
+                    //paper
+                    results = "Copmuter chose Paper. It's a tie";
+                    draw(rock, hpaper, scissors, rock, hpaper, scissors);
+                }
+                else {
+                    //scissors
+                    results = "Computer chose Scissors. You lose!";
+                    draw(rock, hpaper, scissors, rock, paper, hscissors);
+                }
+
+                break;
+            case "scissors":
+                if (cpuChoice == 0) {
+                    //rock
+                    results = "Computer chose Rock. You lose!";
+                    draw(rock, paper, hscissors, hrock, paper, scissors);
+                }
+                else if (cpuChoice == 1) {
+                    //paper
+                    results = "Computer chose Paper. You win!";
+                    draw(rock, paper, hscissors, rock, hpaper, scissors);
+                }
+                else {
+                    //scissors
+                    results = "Computer chose Scissors. It's a tie!";
+                    draw(rock, paper, hscissors, rock, paper, hscissors);
+                }
+
+                break;
+        }
+    }
+
 }
