@@ -16,12 +16,6 @@ canvas{
     border: 1px solid black;
     box-sizing:border-box;
 }
-a:link, a:visited{
-    display:inline-block;
-    background-color:yellow;
-    padding:10px;
-    margin:20px;
-}
 h1{
     display: flex;
     justify-content: center;
