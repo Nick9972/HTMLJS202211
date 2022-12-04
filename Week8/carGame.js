@@ -3,19 +3,40 @@ var ctx = canvas.getContext("2d");
 
 var timer = requestAnimationFrame(main);
 
-var start = 50;
-var finish = 750;
+var start = 58;
+var finish = 956;
 var carPos = 2;
 
-var startFuel = randomNumber(canvas.width, 600);
+var startFuel = 935;
+//var startFuel = randomNumber(canvas.width, 600);
 var fuel = startFuel;
-var fuelBarWidth = 300;
-var speed = 15;
+var fuelBarWidth = 512;
+var speed = 4;
 var gameOver = true;
 
 var seconds = 3;
 var fps = 60;
 var frames = fps;
+//background
+var bg = new Image();
+bg.src = "images/desert.jpg";
+bg.unload = function(){
+    main();
+}
+//car sprite
+var carSprite = new Image();
+carSprite.src = "images/plane.png";
+
+carSprite.onload = function(){
+    main();
+}
+
+//finish line image
+var finishLine = new Image();
+finishLine.src = "images/finishline.png";
+finishLine.onload = function(){
+    main();
+}
 
 //add some event listeners
 document.addEventListener("keydown", keyPressDown);
@@ -24,7 +45,7 @@ function keyPressDown(e){
     if(e.keyCode == 32 && gameOver){
         gameOver = false;
     }
-    if(fuel <= 0){
+    if(fuel <= 0 || speed <= 0){
         //restart game
         restartGame();
     }
@@ -33,9 +54,12 @@ function keyPressDown(e){
 
 function main(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(bg, 0,0, canvas.width,canvas.height);
     if(gameOver){
+        ctx.fillStyle = "blue";
+        ctx.fillRect(0,0,canvas.width,canvas.height);
         ctx.fillStyle = "black";
-        ctx.font = "30px Arial";
+        ctx.font = "30px georgia";
         ctx.textAlign = "center"
         ctx.fillText("Press Space to Start", canvas.width/2,canvas.height/2);
     }else{
@@ -49,7 +73,8 @@ function main(){
                 fuel -= speed;
             }
         }
-        drawStartFinish();
+        drawStart();
+        drawFinish();
         drawCar();
     
 
@@ -60,29 +85,31 @@ function main(){
         }
 
     }
-    
+
     timer = requestAnimationFrame(main);
 }
 
-function drawStartFinish(){
-    ctx.fillStyle = "black";
+function drawStart(){
+    ctx.fillStyle = "yellow";
     //start line
-    ctx.fillRect(start, 50, 10, 500);
-    //finish line
-    ctx.fillRect(finish, 50, 10, 500);
+    ctx.fillRect(start, 135, 10, 500);
+}
+
+function drawFinish(){
+    ctx.drawImage(finishLine, finish, 135, 30,500);
 }
 
 function drawCar(){
     //draw car
-    ctx.fillStyle = "green";
-    ctx.fillRect(carPos,canvas.height/2, 40, 20);
+    ctx.drawImage(carSprite, carPos, canvas.height/2, 50, 55);
 }
 
 function drawFuelBar(){
     var currentBarWidth = fuelBarWidth * (fuel/startFuel);
     ctx.fillStyle = "black";
     ctx.fillRect(start, 30, fuelBarWidth, 10);
-    ctx.font = "25px Arial";
+    ctx.fillStyle = "darkorange"
+    ctx.font = "25px georgia";
     ctx.fillText("Fuel", start, 25);
     if(fuel > 0){
         ctx.fillStyle = "red";
@@ -91,16 +118,12 @@ function drawFuelBar(){
 }
 
 function drawResults(){
-    if(carPos + 40 > finish){
-        ctx.fillStyle = "black";
-        ctx.font = "25px Arial";
+    if(carPos + 25 > finish){
+        speed = 0;
+        ctx.fillStyle = "cyan";
+        ctx.font = "40px gerogia";
         ctx.textAlign = "center";
         ctx.fillText("You Made it to the Finish... You Win",canvas.width/2,canvas.height/2);
-    }else{
-        ctx.fillStyle = "black";
-        ctx.font = "25px Arial";
-        ctx.textAlign = "center";
-        ctx.fillText("You Ran Out of Fuel... You Lose",canvas.width/2,canvas.height/2);
     }
 }
 
@@ -117,8 +140,8 @@ function runStartTimer(){
 }
 
 function drawStartTimer(){
-    ctx.fillStyle = "black";
-    ctx.font = "25px Arial";
+    ctx.fillStyle = "lawngreen";
+    ctx.font = "60px georgia";
     ctx.textAlign = "center";
     ctx.fillText(seconds,canvas.width/2,canvas.height/2);
 }
