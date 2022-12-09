@@ -9,15 +9,22 @@
         html,body{
             display: flex;
             justify-content: center;
-            background-color: black;
         }
         #canvas{
             border: 1px solid blue;
+            background-color: black;
         }
     </style>
+    <link rel="stylesheet" href="AsteroidAvoider.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Audiowide">
 </head>
 <body>
-    <canvas id="canvas" width="1000" height="800"></canvas>
+    <div id="container">
+        <header><h1>Asteroid Avoider</h1></header>
+        <canvas id="canvas" width="1000" height="800"></canvas>
+        <footer>&copy HTMLJavaScriptClass</footer>
+    </div>
+    
     <script src="AsteroidAvoider.js"></script>
 </body>
 </html>

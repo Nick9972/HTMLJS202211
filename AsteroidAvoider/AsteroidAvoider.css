@@ -1,0 +1,12 @@
+header{
+    text-align: center;
+    color: aqua;
+    font-family: "Audiowide", sans-serif;
+}
+footer{
+    text-align: left;
+    color: brown;
+}
+html{
+    background-image: url("images/background.jpg");
+}

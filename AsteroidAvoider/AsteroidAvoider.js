@@ -11,6 +11,22 @@ var score = 0
 var highScore = 0
 
 
+//ship sprite
+var shipSprite = new Image();
+shipSprite.src = "images/xwing.png";
+
+shipSprite.onload = function(){
+    main();
+}
+
+//tie fighter sprite
+var fighterSprite = new Image();
+fighterSprite.src = "images/tiefighter.png";
+
+fighterSprite.onload = function(){
+    main();
+}
+
 //utility functions
 function randomRange(high, low){
     return Math.random() * (high-low) + low
@@ -28,22 +44,23 @@ function gameStart(){
 
 //Constructor Function for Asteroid Class
 function Asteroid(){
-    this.radius = randomRange(15,2)
-    this.x = randomRange(canvas.width - this.radius, this.radius)
-    this.y = randomRange(canvas.height - this.radius, this.radius) - canvas.height
-    this.vy = randomRange(10, 5)
-    this.color = "white"
+    this.radius = randomRange(40,25)
+    this.x = randomRange(canvas.width - this.radius, this.radius) + canvas.width
+    this.y = randomRange(canvas.height - this.radius, this.radius)
+    this.vx = randomRange(-6, -3)
+    this.fighterColor = randomRange(7,0)
 
     this.drawAsteroid = function(){
         ctx.save()
-        ctx.beginPath()
-        ctx.fillStyle = this.color
-        ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, true)
-        ctx.closePath()
-        ctx.fill()
+        //ctx.beginPath()
+        //ctx.fillStyle = this.color
+        //ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI, true)
+        //ctx.closePath()
+        //ctx.fill()
+        ctx.drawImage(fighterSprite, this.x, this.y,this.radius,this.radius)
         ctx.restore()
-
     }
+
 
 }
 
@@ -121,10 +138,10 @@ function pressKeyUp(e){
 
 //constructor function
 function PlayerShip(){
-    this.x = canvas.width/2
-    this.y = canvas.height/2
+    this.x = (canvas.width/2 - 300)
+    this.y = (canvas.height/2 - 100)
     this.w = 20
-    this.h = 20
+    this.h = 50
     this.vx = 0
     this.vy = 0
     this.up = false
@@ -136,7 +153,7 @@ function PlayerShip(){
     this.drawShip = function(){
        ctx.save()
         ctx.translate(this.x, this.y)
-        if(this.up || this.left || this.right){
+        if(this.up || this.down || this.right){
             ctx.save()
             //Changes the drawing values to animate the flame
             if(this.flamelength == 30){
@@ -147,25 +164,30 @@ function PlayerShip(){
                 this.flamelength = 30
                 ctx.fillStyle = "orange"
             }
-            ctx.beginPath()
-            ctx.moveTo(0, this.flamelength)
-            ctx.lineTo(5,5)
-            ctx.lineTo(-5,5)
-            ctx.lineTo(0,this.flamelength)
-            ctx.closePath()
-            ctx.fill()
-            ctx.restore()
+            ctx.beginPath();
+            ctx.moveTo(-this.flamelength, -6);
+            ctx.lineTo(0,-8);
+            ctx.lineTo(0,-2);
+            ctx.lineTo(-this.flamelength, -6);
+            ctx.moveTo(-this.flamelength, 6);
+            ctx.lineTo(0,8);
+            ctx.lineTo(0,2);
+            ctx.lineTo(-this.flamelength, 6);
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
 
         }
-        ctx.fillStyle = "red"
+        ctx.fillStyle = "black"
         ctx.beginPath()
-        ctx.moveTo(0, -10)
-        ctx.lineTo(10, 10)
-        ctx.lineTo(-10, 10)
-        ctx.lineTo(0, -10)
+        ctx.moveTo(0, -24)
+        ctx.lineTo(50, 0)
+        ctx.lineTo(0, 24)
+        ctx.lineTo(0, -24)
         ctx.closePath()
-        ctx.fill();
-        ctx.restore() 
+        ctx.fill(); 
+        ctx.drawImage(shipSprite, -5,-25,50,50)
+        ctx.restore();
     }
 
     this.move = function(){
@@ -197,6 +219,8 @@ function PlayerShip(){
       
 }
 
+
+
 //Main Screen
 gameStates[0] = function(){
     ctx.save()
@@ -219,20 +243,23 @@ gameStates[1] = function(){
     ctx.fillText("Score: " + score.toString(), canvas.width - 150, 30)
     ctx.restore()
 
+
+
+
     //Vertical 
     if(ship.up){
-        ship.vy = -10
+        ship.vy = -6
+    }else if(ship.down){
+        ship.vy = 6
     }else{
-        ship.vy = 3
+        ship.vy = 0
     }
     
     //Horizontal Movement
-    if(ship.left){
-        ship.vx = -3
-    }else if(ship.right){
-        ship.vx = 3
+    if(ship.right){
+        ship.vx = 6
     }else{
-        ship.vx = 0
+        ship.vx = -3
     }
 
     //Loops through all asteroids and can check their position
@@ -241,21 +268,21 @@ gameStates[1] = function(){
         var dY = ship.y - asteroids[i].y
         var distance = Math.sqrt((dX*dX)+(dY*dY))
 
-        if(detectCollision(distance, (ship.h/2 + asteroids[i].radius))){
-            console.log("hit asteroid")
-            gameOver = true
-            currentState = 2
-            main()
+        //if(detectCollision(distance, (ship.h/2 + (asteroids[i].radius - 10)))){
+            //console.log("hit asteroid")
+            //gameOver = true
+            //currentState = 2
+            //main()
             
-        }
+        //}
 
 
-        if(asteroids[i].y > canvas.height + asteroids[i].radius){
-            asteroids[i].x = randomRange(canvas.width - asteroids[i].radius, asteroids[i].radius)
-            asteroids[i].y = randomRange(canvas.height - asteroids[i].radius, asteroids[i].radius) -  canvas.height
+        if(asteroids[i].x < canvas.height + asteroids[i].radius - 875){
+            asteroids[i].x = randomRange(canvas.width - asteroids[i].radius, asteroids[i].radius) + canvas.width
+            asteroids[i].y = randomRange(canvas.height - asteroids[i].radius, asteroids[i].radius)
         }
         if(!gameOver){
-            asteroids[i].y += asteroids[i].vy
+            asteroids[i].x += asteroids[i].vx
             asteroids[i].drawAsteroid()
         }
     }
