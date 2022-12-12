@@ -9,6 +9,11 @@ var gameStates = []
 var currentState = 0
 var score = 0
 var highScore = 0
+var orbTime = 0
+var radius = 20
+
+var powerUp = false
+var orb
 
 
 //ship sprite
@@ -40,6 +45,8 @@ function gameStart(){
 
     //Create an instance of the PlayerShip
     ship = new PlayerShip()
+
+    orb = new Orb()
 }
 
 //Constructor Function for Asteroid Class
@@ -134,6 +141,27 @@ function pressKeyUp(e){
         } 
     }
     
+}
+
+//Powerup constructor
+function Orb(){
+    this.x = (canvas.width - radius)
+    this.y = (canvas.height/2)
+    this.vx = -10
+    this.drawOrb = function(){
+        ctx.save()
+        ctx.beginPath()
+        ctx.fillStyle = "cyan"
+        ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI, true)
+        ctx.closePath()
+        ctx.fill()
+        ctx.restore();
+        //console.log(radius, this.x, this.y);
+        if(this.x < -canvas.width){
+            orbTime = 0
+            this.x = (canvas.width - radius)
+        }
+    }
 }
 
 //constructor function
@@ -243,8 +271,29 @@ gameStates[1] = function(){
     ctx.fillText("Score: " + score.toString(), canvas.width - 150, 30)
     ctx.restore()
 
+    orbTime++
+    //console.log(orbTime);
 
+    if(orbTime > 500){
+        orb.drawOrb()
+        orb.x += orb.vx;
+    }
 
+    if (powerUp == false) {
+        var oX = ship.x - orb.x;
+        var oY = ship.y - orb.y;
+        var oDist = Math.sqrt((oX * oX) + (oY * oY))
+        //console.log(ship.h / 2 + (radius-10));
+        if (orbCol(oDist, (ship.h / 2 + (radius-10)))) {
+            console.log("Powerup")
+            powerUp = true;
+            console.log(powerUp);
+        }
+    }
+
+    if(powerUp == true){
+        //insert draw around ship
+    }
 
     //Vertical 
     if(ship.up){
@@ -275,6 +324,8 @@ gameStates[1] = function(){
             //main()
             
         //}
+
+    
 
 
         if(asteroids[i].x < canvas.height + asteroids[i].radius - 875){
@@ -343,6 +394,10 @@ function main(){
 
 function detectCollision(distance, calcDistance){
     return distance < calcDistance
+}
+
+function orbCol(oDist, calcDistance){
+    return oDist < calcDistance
 }
 
 //Timer for Score
