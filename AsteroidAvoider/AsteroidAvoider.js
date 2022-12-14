@@ -15,6 +15,8 @@ var radius = 20
 var powerUp = false
 var orb
 
+var timeStop = false
+
 
 //ship sprite
 var shipSprite = new Image();
@@ -156,10 +158,11 @@ function Orb(){
         ctx.closePath()
         ctx.fill()
         ctx.restore();
-        //console.log(radius, this.x, this.y);
-        if(this.x < -canvas.width){
-            orbTime = 0
-            this.x = (canvas.width - radius)
+        
+        if(this.x < -canvas.width || powerUp == true){
+            timeStop = false
+            this.x = ((canvas.width) + radius)
+            console.log(this.x);
         }
     }
 }
@@ -216,6 +219,17 @@ function PlayerShip(){
         ctx.fill(); 
         ctx.drawImage(shipSprite, -5,-25,50,50)
         ctx.restore();
+
+        if(powerUp==true){
+            ctx.save()
+            ctx.beginPath()
+            ctx.fillStyle = "cyan"
+            ctx.strokeStyle = "cyan"
+            ctx.arc(this.x + 10, this.y, 40, 0, 2 * Math.PI, true)
+            ctx.closePath()
+            ctx.stroke()
+            ctx.restore();
+        }
     }
 
     this.move = function(){
@@ -271,12 +285,16 @@ gameStates[1] = function(){
     ctx.fillText("Score: " + score.toString(), canvas.width - 150, 30)
     ctx.restore()
 
-    orbTime++
-    //console.log(orbTime);
+
+    console.log(orbTime);
 
     if(orbTime > 500){
+        timeStop = true
         orb.drawOrb()
         orb.x += orb.vx;
+    }
+    if(timeStop == false){
+        orbTime++
     }
 
     if (powerUp == false) {
@@ -291,9 +309,7 @@ gameStates[1] = function(){
         }
     }
 
-    if(powerUp == true){
-        //insert draw around ship
-    }
+
 
     //Vertical 
     if(ship.up){
@@ -316,14 +332,15 @@ gameStates[1] = function(){
         var dX = ship.x - asteroids[i].x
         var dY = ship.y - asteroids[i].y
         var distance = Math.sqrt((dX*dX)+(dY*dY))
+        if (powerUp == false) {
+            if (detectCollision(distance, (ship.h / 2 + (asteroids[i].radius - 10)))) {
+                console.log("hit asteroid")
+                gameOver = true
+                currentState = 2
+                main()
 
-        //if(detectCollision(distance, (ship.h/2 + (asteroids[i].radius - 10)))){
-            //console.log("hit asteroid")
-            //gameOver = true
-            //currentState = 2
-            //main()
-            
-        //}
+            }
+        }
 
     
 
@@ -392,17 +409,18 @@ function main(){
     
 }
 
-function detectCollision(distance, calcDistance){
+function detectCollision(distance, calcDistance) {
     return distance < calcDistance
 }
 
-function orbCol(oDist, calcDistance){
+function orbCol(oDist, calcDistance) {
     return oDist < calcDistance
 }
 
+
 //Timer for Score
-function scoreTimer(){
-    if(!gameOver){
+function scoreTimer() {
+    if (!gameOver) {
         score++
         //using modulus  that returns remainder of a decimal
         //checks to see if remainder is divisble by 5
