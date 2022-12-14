@@ -12,11 +12,19 @@ var highScore = 0
 var orbTime = 0
 var radius = 20
 
+var powerDur = 0
+
 var powerUp = false
 var orb
 
 var timeStop = false
 
+
+var bg = new Image();
+bg.src = "images/start.png";
+
+var end = new Image();
+end.src = "images/end.png"
 
 //ship sprite
 var shipSprite = new Image();
@@ -154,15 +162,24 @@ function Orb(){
         ctx.save()
         ctx.beginPath()
         ctx.fillStyle = "cyan"
-        ctx.arc(this.x, this.y, radius, 0, 2 * Math.PI, true)
+        ctx.arc(this.x + 100, this.y, radius, 0, 2 * Math.PI, true)
+        ctx.closePath()
+        ctx.fill()
+        ctx.beginPath()
+        ctx.fillStyle = "lightblue"
+        ctx.arc(this.x + 100, this.y, (radius - 2), 0, 2 * Math.PI, true)
+        ctx.closePath()
+        ctx.fill()
+        ctx.beginPath()
+        ctx.fillStyle = "palegoldenrod"
+        ctx.arc(this.x + 100, this.y, (radius - 8), 0, 2 * Math.PI, true)
         ctx.closePath()
         ctx.fill()
         ctx.restore();
         
         if(this.x < -canvas.width || powerUp == true){
-            timeStop = false
             this.x = ((canvas.width) + radius)
-            console.log(this.x);
+            //timeStop = false
         }
     }
 }
@@ -221,13 +238,13 @@ function PlayerShip(){
         ctx.restore();
 
         if(powerUp==true){
-            ctx.save()
-            ctx.beginPath()
+            ctx.save();
+            ctx.beginPath();
             ctx.fillStyle = "cyan"
             ctx.strokeStyle = "cyan"
-            ctx.arc(this.x + 10, this.y, 40, 0, 2 * Math.PI, true)
-            ctx.closePath()
-            ctx.stroke()
+            ctx.arc(this.x + 10, this.y, 40, 0, 2 * Math.PI, true);
+            ctx.closePath();
+            ctx.stroke();
             ctx.restore();
         }
     }
@@ -265,7 +282,9 @@ function PlayerShip(){
 
 //Main Screen
 gameStates[0] = function(){
+    orbTime = 0
     ctx.save()
+    ctx.drawImage(bg,0,0,canvas.width,canvas.height)
     ctx.font = "30px Arial"
     ctx.fillStyle = "white"
     ctx.textAlign = "center"
@@ -285,17 +304,28 @@ gameStates[1] = function(){
     ctx.fillText("Score: " + score.toString(), canvas.width - 150, 30)
     ctx.restore()
 
-
+    console.log(timeStop)
     console.log(orbTime);
 
     if(orbTime > 500){
-        timeStop = true
         orb.drawOrb()
         orb.x += orb.vx;
     }
-    if(timeStop == false){
-        orbTime++
+
+    if(powerUp == true){
+        powerDur++
+        timeStop = true
     }
+    if(powerDur == 300){
+        powerUp = false
+        orbTime = 0
+        timeStop = false
+        powerDur = 0
+    }
+
+    //if(timeStop == false){
+        orbTime += 10
+    //}
 
     if (powerUp == false) {
         var oX = ship.x - orb.x;
@@ -370,26 +400,30 @@ gameStates[2] = function(){
         //set a new high score
         highScore = score
         ctx.save()
+        ctx.drawImage(end,0,0,canvas.width,canvas.height - 250)
         ctx.font = "30px Arial"
         ctx.fillStyle = "white"
         ctx.textAlign = "center"
-        ctx.fillText("Game Over, your high score score was: " + score.toString() , canvas.width/2, canvas.height/2-60)
-        ctx.fillText("Your new high score is: " + highScore.toString() , canvas.width/2, canvas.height/2-30)
-        ctx.fillText("New Record", canvas.width/2, canvas.height/2)
+        ctx.fillText("Your high score score was: " + score.toString() , canvas.width/2, canvas.height/2+90)
+        ctx.fillText("Your new high score is: " + highScore.toString() , canvas.width/2, canvas.height/2+60)
+        ctx.fillText("New Record", canvas.width/2, canvas.height/2 + 30)
         ctx.font = "15px Arial"
-        ctx.fillText("Press Space to Play Again", canvas.width/2, canvas.height/2 + 20)
+        ctx.fillStyle = "lightblue"
+        ctx.fillText("Press Space to Play Again", canvas.width/2, canvas.height/2 + 175)
         ctx.restore()
 
     }else{
         //keep same score new high score
         ctx.save()
+        ctx.drawImage(end,0,0,canvas.width,canvas.height - 250)
         ctx.font = "30px Arial"
         ctx.fillStyle = "white"
         ctx.textAlign = "center"
-        ctx.fillText("Game Over, your score was: " + score.toString() , canvas.width/2, canvas.height/2-60)
-        ctx.fillText("Your high score is: " + highScore.toString() , canvas.width/2, canvas.height/2-30)
+        ctx.fillText("Game Over, your score was: " + score.toString() , canvas.width/2, canvas.height/2+90)
+        ctx.fillText("Your high score is: " + highScore.toString() , canvas.width/2, canvas.height/2+60)
         ctx.font = "15px Arial"
-        ctx.fillText("Press Space to Play Again", canvas.width/2, canvas.height/2 + 20)
+        ctx.fillStyle = "lightblue"
+        ctx.fillText("Press Space to Play Again", canvas.width/2, canvas.height/2 + 175)
         ctx.restore()
     }
     
